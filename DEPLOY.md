@@ -31,33 +31,45 @@ git remote add origin <url-do-seu-repositorio>
 git push -u origin main
 ```
 
-## Opção A: Vercel + Fly.io
+## Opção A: Vercel + Render
 
-### 2. Servidor de sinalização (Fly.io — exemplo)
+### 2. Servidor de sinalização (Render — grátis, sem pedir cartão)
 
-```bash
-cd pet-cam
-fly launch --no-deploy   # cria o app, escolha um nome
-fly secrets set ALLOWED_ORIGINS=https://SEU-PROJETO.vercel.app
-fly deploy
-```
+1. Crie uma conta em [render.com](https://render.com) (pode entrar com GitHub).
+2. **New +** → **Web Service** → conecte o repositório `pet-cam` (o mesmo do frontend, é a
+   mesma pasta — Render só vai rodar um arquivo diferente dele).
+3. Configure:
+   - **Runtime**: Node
+   - **Build Command**: `npm install`
+   - **Start Command**: `node server/signal.js`
+   - **Instance Type**: Free
+4. Em *Environment Variables*, adicione (ainda sem `ALLOWED_ORIGINS` — isso vem depois do
+   passo 3):
+   - `TURN_API_KEY` = sua API key da Metered (se for usar TURN)
+   - `TURN_DOMAIN` = `petwatch.metered.live` (o domínio do seu app na Metered)
+5. **Create Web Service** e espere o deploy.
+6. Anote a URL que o Render te dá, algo como `https://petwatch-signal.onrender.com`.
 
-Se preferir Render/Railway/uma VPS: basta rodar `node server/signal.js` com as variáveis de
-ambiente `ALLOWED_ORIGINS` e opcionalmente `SIGNAL_PORT`. O único requisito é que a plataforma
-sirva HTTPS/WSS (a maioria termina TLS automaticamente na borda).
+⚠️ No plano free, o Render "adormece" o serviço depois de 15 min sem uso e demora uns 30-60s
+pra acordar na próxima conexão — normal, só significa que o primeiro pareamento remoto depois
+de um tempo parado demora um pouco mais pra conectar.
 
-Anote a URL pública, por exemplo `wss://petwatch-signal.fly.dev`.
+Não precisa mexer em `SIGNAL_PORT` — o Render injeta a porta certa automaticamente e o servidor
+já sabe usá-la.
 
 ### 3. Frontend no Vercel
 
 1. Importe o repositório no [vercel.com/new](https://vercel.com/new).
 2. Framework preset: **Vite** (detecta sozinho).
-3. Em *Environment Variables*, adicione:
-   - `VITE_SIGNAL_URL` = `wss://petwatch-signal.fly.dev` (a URL do passo 2)
-   - `VITE_TURN_URL`, `VITE_TURN_USERNAME`, `VITE_TURN_CREDENTIAL` (opcional, veja abaixo)
-4. Deploy.
-5. Volte no servidor de sinalização e confirme que `ALLOWED_ORIGINS` bate exatamente com a URL
-   final do Vercel (ex: `https://petwatch.vercel.app`, sem barra no final).
+3. Em *Environment Variables*, adicione só:
+   - `VITE_SIGNAL_URL` = `wss://petwatch-signal.onrender.com` (troque `https://` por `wss://`
+     na URL que o Render te deu no passo 2)
+4. Deploy. Anote a URL final, ex: `https://petwatch.vercel.app`.
+5. Volte no Render → seu serviço → *Environment* → adicione:
+   - `ALLOWED_ORIGINS` = `https://petwatch.vercel.app` (a URL do passo 4, sem barra no final)
+
+   Isso reinicia o servidor de sinalização sozinho e fecha ele pra qualquer site que não seja o
+   seu.
 
 ## Opção B: tudo na sua VPS (Linux + domínio)
 
