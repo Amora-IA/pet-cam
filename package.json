@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "signal": "node server/signal.js",
+    "signal": "node --env-file-if-exists=.env server/signal.js",
     "dev:all": "concurrently -n vite,signal -c cyan,magenta \"npm:dev\" \"npm:signal\"",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
