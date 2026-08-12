@@ -190,6 +190,9 @@ const httpServer = createServer((req, res) => {
 const wss = new WebSocketServer({
   server: httpServer,
   verifyClient: ({ origin }) => isOriginAllowed(origin),
+  // real messages here (join/signal) are a few KB at most — a generous cap
+  // still blocks someone from sending giant frames to exhaust memory
+  maxPayload: 32 * 1024,
 });
 
 wss.on("connection", (ws, req) => {
