@@ -117,6 +117,9 @@ Type=simple
 WorkingDirectory=/var/www/petwatch
 Environment=ALLOWED_ORIGINS=https://petwatch.seudominio.com
 Environment=SIGNAL_PORT=8787
+# Opcional, só se for usar TURN (veja a seção 4 mais abaixo):
+Environment=TURN_API_KEY=sua-api-key-da-metered
+Environment=TURN_DOMAIN=petwatch.metered.live
 ExecStart=/usr/bin/node server/signal.js
 Restart=on-failure
 User=www-data
@@ -187,9 +190,32 @@ Sem TURN, o pareamento remoto só funciona de forma confiável quando os dois la
 enxergar diretamente (mesma rede, ou redes com NAT simples). Para funcionar de qualquer lugar
 (dados móveis, redes corporativas, etc.), você precisa de um servidor TURN.
 
-Opções rápidas: [metered.ca](https://www.metered.ca/tools/openrelay/) tem um tier gratuito,
-Twilio Network Traversal Service, ou rode seu próprio [coturn](https://github.com/coturn/coturn).
-Coloque as credenciais em `VITE_TURN_URL` / `VITE_TURN_USERNAME` / `VITE_TURN_CREDENTIAL`.
+Opção mais simples: [metered.ca](https://www.metered.ca/tools/openrelay/) tem um plano
+**"Global 500MB Plan — no card required"**, sem cartão. Depois de criar a conta, pegue na aba
+**Developers** do painel:
+
+- a **API Key**
+- o **domínio do seu app** (ex: `petwatch.metered.live`)
+
+⚠️ **Nunca coloque essas duas coisas em variáveis `VITE_*`** — tudo que começa com `VITE_` é
+embutido no JavaScript público, então qualquer pessoa que abrir o código-fonte da página
+conseguiria copiar sua API key e gastar sua cota. Em vez disso, configure no **servidor de
+sinalização** (nunca no Vercel/frontend):
+
+```
+TURN_API_KEY=sua-api-key-da-metered
+TURN_DOMAIN=petwatch.metered.live
+```
+
+O servidor de sinalização busca as credenciais por trás dos panos (`GET /turn-credentials`,
+já com rate limit) e devolve pro navegador só o resultado — a API key nunca aparece no
+frontend. O frontend não precisa de nenhuma variável de ambiente extra pra isso, já funciona
+automaticamente assim que o servidor tiver `TURN_API_KEY`/`TURN_DOMAIN` configurados.
+
+Se preferir outro provedor (Twilio, Xirsys) ou seu próprio
+[coturn](https://github.com/coturn/coturn) com usuário/senha fixos, dá pra adaptar a rota
+`/turn-credentials` em `server/signal.js` pra devolver esse par fixo em vez de chamar a API da
+Metered.
 
 Importante: um relay TURN só repassa bytes criptografados (DTLS-SRTP) — ele não consegue ver o
 conteúdo do vídeo — mas ele vê metadados de conexão (IPs, timing). Escolha um provedor em que
