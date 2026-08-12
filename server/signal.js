@@ -3,7 +3,9 @@ import { randomBytes } from "node:crypto";
 import { networkInterfaces } from "node:os";
 import { WebSocketServer } from "ws";
 
-const PORT = process.env.SIGNAL_PORT ? Number(process.env.SIGNAL_PORT) : 8787;
+// SIGNAL_PORT takes priority; PORT is what Render/Fly/Railway/etc inject
+// automatically, so falling back to it means one less thing to configure.
+const PORT = Number(process.env.SIGNAL_PORT ?? process.env.PORT ?? 8787);
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "")
   .split(",")
   .map((s) => s.trim())
