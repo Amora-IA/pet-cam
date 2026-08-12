@@ -20,105 +20,114 @@ export function useViewerConnection({ room, useStun }: UseViewerConnectionOption
   useEffect(() => {
     if (!room) return;
     let cancelled = false;
+    let pc: RTCPeerConnection | null = null;
+    let signal: SignalingClient | null = null;
 
-    const pc = new RTCPeerConnection({ iceServers: buildIceServers(useStun) });
-    const signal = new SignalingClient();
-    const id = crypto.randomUUID();
-    const remote = new MediaStream();
-    setRemoteStream(remote);
-
-    pc.ontrack = (e) => {
+    (async () => {
+      const iceServers = await buildIceServers(useStun);
       if (cancelled) return;
-      remote.addTrack(e.track);
-      setRemoteStream(new MediaStream(remote.getTracks()));
-    };
 
-    pc.ondatachannel = (e) => {
-      e.channel.onmessage = (ev) => {
+      pc = new RTCPeerConnection({ iceServers });
+      const activePc = pc;
+      signal = new SignalingClient();
+      const activeSignal = signal;
+      const id = crypto.randomUUID();
+      const remote = new MediaStream();
+      setRemoteStream(remote);
+
+      activePc.ontrack = (e) => {
         if (cancelled) return;
-        try {
-          setCameraStatus(JSON.parse(ev.data));
-        } catch {
-          // ignore malformed status payloads
+        remote.addTrack(e.track);
+        setRemoteStream(new MediaStream(remote.getTracks()));
+      };
+
+      activePc.ondatachannel = (e) => {
+        e.channel.onmessage = (ev) => {
+          if (cancelled) return;
+          try {
+            setCameraStatus(JSON.parse(ev.data));
+          } catch {
+            // ignore malformed status payloads
+          }
+        };
+      };
+
+      activePc.onicecandidate = (e) => {
+        if (cancelled) return;
+        if (e.candidate) {
+          activeSignal.send({
+            type: "signal",
+            room,
+            to: "host",
+            payload: { kind: "ice", candidate: e.candidate.toJSON() },
+          });
         }
       };
-    };
 
-    pc.onicecandidate = (e) => {
-      if (cancelled) return;
-      if (e.candidate) {
-        signal.send({
-          type: "signal",
-          room,
-          to: "host",
-          payload: { kind: "ice", candidate: e.candidate.toJSON() },
-        });
-      }
-    };
-
-    pc.onconnectionstatechange = () => {
-      if (cancelled) return;
-      if (pc.connectionState === "connected") setStatus("connected");
-      else if (["failed", "disconnected", "closed"].includes(pc.connectionState)) {
-        setStatus("disconnected");
-      }
-    };
-
-    async function setupMicTrack() {
-      try {
-        const micStream = await navigator.mediaDevices.getUserMedia({
-          audio: { echoCancellation: true, noiseSuppression: true },
-        });
-        if (cancelled) {
-          micStream.getTracks().forEach((t) => t.stop());
-          return;
+      activePc.onconnectionstatechange = () => {
+        if (cancelled) return;
+        if (activePc.connectionState === "connected") setStatus("connected");
+        else if (["failed", "disconnected", "closed"].includes(activePc.connectionState)) {
+          setStatus("disconnected");
         }
-        const track = micStream.getTracks()[0];
-        track.enabled = false;
-        micTrackRef.current = track;
-        pc.addTrack(track, micStream);
-      } catch {
-        setMicError("Microfone indisponível — só será possível assistir.");
-      }
-    }
+      };
 
-    signal.onOpen = () => {
-      if (cancelled) return;
-      signal.send({ type: "join", room, role: "viewer", id });
-    };
-
-    signal.onMessage = async (msg) => {
-      if (cancelled) return;
-      if (msg.type === "signal" && msg.payload.kind === "offer") {
-        await setupMicTrack();
-        await pc.setRemoteDescription(msg.payload.sdp);
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        signal.send({
-          type: "signal",
-          room,
-          to: "host",
-          payload: { kind: "answer", sdp: answer },
-        });
-      } else if (msg.type === "signal" && msg.payload.kind === "ice") {
+      async function setupMicTrack() {
         try {
-          await pc.addIceCandidate(msg.payload.candidate);
+          const micStream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true },
+          });
+          if (cancelled) {
+            micStream.getTracks().forEach((t) => t.stop());
+            return;
+          }
+          const track = micStream.getTracks()[0];
+          track.enabled = false;
+          micTrackRef.current = track;
+          activePc.addTrack(track, micStream);
         } catch {
-          // candidate arrived before remote description; safe to ignore
+          setMicError("Microfone indisponível — só será possível assistir.");
         }
-      } else if (msg.type === "peer-left" || msg.type === "error") {
-        setStatus("disconnected");
       }
-    };
 
-    signal.onClose = () => {
-      if (!cancelled) setStatus("disconnected");
-    };
+      activeSignal.onOpen = () => {
+        if (cancelled) return;
+        activeSignal.send({ type: "join", room, role: "viewer", id });
+      };
+
+      activeSignal.onMessage = async (msg) => {
+        if (cancelled) return;
+        if (msg.type === "signal" && msg.payload.kind === "offer") {
+          await setupMicTrack();
+          await activePc.setRemoteDescription(msg.payload.sdp);
+          const answer = await activePc.createAnswer();
+          await activePc.setLocalDescription(answer);
+          activeSignal.send({
+            type: "signal",
+            room,
+            to: "host",
+            payload: { kind: "answer", sdp: answer },
+          });
+        } else if (msg.type === "signal" && msg.payload.kind === "ice") {
+          try {
+            await activePc.addIceCandidate(msg.payload.candidate);
+          } catch {
+            // candidate arrived before remote description; safe to ignore
+          }
+        } else if (msg.type === "peer-left" || msg.type === "error") {
+          setStatus("disconnected");
+        }
+      };
+
+      activeSignal.onClose = () => {
+        if (!cancelled) setStatus("disconnected");
+      };
+    })();
 
     return () => {
       cancelled = true;
-      signal.close();
-      pc.close();
+      signal?.close();
+      pc?.close();
       micTrackRef.current?.stop();
     };
   }, [room, useStun]);

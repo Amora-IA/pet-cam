@@ -9,6 +9,12 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "")
   .map((s) => s.trim())
   .filter(Boolean);
 
+// TURN credentials stay server-side only — never ship an API key to the
+// browser bundle, or anyone reading the JS could mint credentials on your
+// account and burn through your quota.
+const TURN_API_KEY = process.env.TURN_API_KEY ?? "";
+const TURN_DOMAIN = process.env.TURN_DOMAIN ?? "";
+
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no O/0/I/1 ambiguity
 const ROOM_UNCLAIMED_TTL_MS = 5 * 60 * 1000;
 const HOST_RECONNECT_GRACE_MS = 2 * 60 * 1000;
@@ -57,6 +63,7 @@ function makeLimiter(limit, windowMs) {
 
 const roomCreationLimiter = makeLimiter(10, 5 * 60 * 1000);
 const wsJoinLimiter = makeLimiter(40, 60 * 1000);
+const turnCredentialsLimiter = makeLimiter(20, 5 * 60 * 1000);
 
 function isOriginAllowed(origin) {
   if (ALLOWED_ORIGINS.length === 0) return true; // permissive: local/dev usage
@@ -133,6 +140,31 @@ const httpServer = createServer((req, res) => {
     });
     res.writeHead(201, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ code, token: hostToken }));
+    return;
+  }
+
+  if (req.url === "/turn-credentials" && req.method === "GET") {
+    if (!TURN_API_KEY || !TURN_DOMAIN) {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify([]));
+      return;
+    }
+    const ip = clientIp(req);
+    if (!turnCredentialsLimiter(ip)) {
+      res.writeHead(429, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "rate_limited" }));
+      return;
+    }
+    fetch(`https://${TURN_DOMAIN}/api/v1/turn/credentials?apiKey=${TURN_API_KEY}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((iceServers) => {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(Array.isArray(iceServers) ? iceServers : []));
+      })
+      .catch(() => {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify([]));
+      });
     return;
   }
 
