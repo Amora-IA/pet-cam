@@ -33,6 +33,15 @@ function clientIp(req) {
 /** ip -> { count, resetAt } */
 function makeLimiter(limit, windowMs) {
   const hits = new Map();
+  // periodically forget IPs whose window has already lapsed, otherwise this
+  // map only ever grows for the lifetime of the process
+  setInterval(() => {
+    const now = Date.now();
+    for (const [ip, entry] of hits) {
+      if (now > entry.resetAt) hits.delete(ip);
+    }
+  }, windowMs).unref();
+
   return (ip) => {
     const now = Date.now();
     const entry = hits.get(ip);
@@ -194,6 +203,11 @@ wss.on("connection", (ws, req) => {
           send(ws, { type: "viewer-joined", viewerId });
         }
       } else {
+        if (id === "host" || entry.viewers.has(id)) {
+          send(ws, { type: "error", message: "id_taken" });
+          ws.close();
+          return;
+        }
         ws.meta = { room, role, id };
         entry.viewers.set(id, ws);
         if (entry.host) {
@@ -206,9 +220,20 @@ wss.on("connection", (ws, req) => {
 
     if (msg.type === "signal") {
       const { room, to, payload } = msg;
+      // a socket may only relay within the exact room it joined, and only
+      // to the peer role it's allowed to talk to (host<->viewer, never
+      // viewer<->viewer) — otherwise any joined socket could guess another
+      // room's code and inject signaling messages into it
+      if (!ws.meta || ws.meta.room !== room) return;
       const entry = rooms.get(room);
-      if (!entry || !ws.meta) return;
-      const target = to === "host" ? entry.host : entry.viewers.get(to);
+      if (!entry) return;
+
+      let target;
+      if (ws.meta.role === "host") {
+        target = entry.viewers.get(to);
+      } else if (to === "host") {
+        target = entry.host;
+      }
       send(target, { type: "signal", from: ws.meta.id, payload });
       return;
     }
@@ -238,4 +263,10 @@ wss.on("connection", (ws, req) => {
 
 httpServer.listen(PORT, () => {
   console.log(`[petwatch signal] listening on :${PORT}`);
+  if (ALLOWED_ORIGINS.length === 0) {
+    console.warn(
+      "[petwatch signal] ALLOWED_ORIGINS is not set — accepting requests from ANY origin. " +
+        "Fine for local dev, but set ALLOWED_ORIGINS before exposing this publicly."
+    );
+  }
 });
