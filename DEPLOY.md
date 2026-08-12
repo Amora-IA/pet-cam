@@ -3,15 +3,21 @@
 O projeto tem duas partes que são publicadas separadamente:
 
 1. **Frontend (React)** — câmera, detecção de movimento, gravação, alertas. 100% roda no
-   navegador de cada visitante. Vai para o **Vercel**.
+   navegador de cada visitante.
 2. **Servidor de sinalização** (`server/signal.js`) — só é necessário para o recurso de
    pareamento remoto (assistir pelo celular). Não guarda vídeo, só troca metadados de conexão
    (SDP/ICE) entre o computador da câmera e quem está assistindo. Precisa rodar em algum lugar
-   com WebSocket persistente — **Vercel não serve para isso**, use Fly.io, Render ou uma VPS
-   qualquer.
+   com WebSocket persistente.
 
-Se você não quiser o pareamento remoto publicado, pule a parte 2 — o app funciona sozinho no
-Vercel sem ele (grava localmente, sem servidor nenhum).
+Se você não quiser o pareamento remoto publicado, pule a parte 2 — o app funciona sozinho sem
+ele (grava localmente, sem servidor nenhum).
+
+Duas formas de publicar:
+
+- **Opção A**: Vercel (frontend) + Fly.io/Render (sinalização) — grátis nos tiers gratuitos,
+  zero manutenção de servidor.
+- **Opção B**: tudo na sua própria VPS com domínio — grátis se você já paga a VPS por outro
+  motivo, mas você cuida da manutenção (updates, certificado, etc).
 
 ## 1. GitHub
 
@@ -25,7 +31,9 @@ git remote add origin <url-do-seu-repositorio>
 git push -u origin main
 ```
 
-## 2. Servidor de sinalização (Fly.io — exemplo)
+## Opção A: Vercel + Fly.io
+
+### 2. Servidor de sinalização (Fly.io — exemplo)
 
 ```bash
 cd pet-cam
@@ -40,7 +48,7 @@ sirva HTTPS/WSS (a maioria termina TLS automaticamente na borda).
 
 Anote a URL pública, por exemplo `wss://petwatch-signal.fly.dev`.
 
-## 3. Frontend no Vercel
+### 3. Frontend no Vercel
 
 1. Importe o repositório no [vercel.com/new](https://vercel.com/new).
 2. Framework preset: **Vite** (detecta sozinho).
@@ -50,6 +58,128 @@ Anote a URL pública, por exemplo `wss://petwatch-signal.fly.dev`.
 4. Deploy.
 5. Volte no servidor de sinalização e confirme que `ALLOWED_ORIGINS` bate exatamente com a URL
    final do Vercel (ex: `https://petwatch.vercel.app`, sem barra no final).
+
+## Opção B: tudo na sua VPS (Linux + domínio)
+
+Vamos usar o [Caddy](https://caddyserver.com/) como servidor web — ele tira HTTPS automático via
+Let's Encrypt sem você precisar mexer em certificado nenhum, e já sabe fazer proxy de WebSocket
+sem configuração extra. Você vai precisar de **dois subdomínios** apontando pro IP da VPS (dois
+registros `A` no DNS do seu domínio): um para o site e outro para a sinalização, por exemplo:
+
+```
+petwatch.seudominio.com      A   <IP-DA-VPS>
+signal.petwatch.seudominio.com   A   <IP-DA-VPS>
+```
+
+### 1. Instalar dependências na VPS
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+```bash
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+sudo apt update && sudo apt install -y caddy
+```
+
+### 2. Trazer o código e buildar o frontend
+
+```bash
+sudo mkdir -p /var/www/petwatch
+sudo chown $USER:$USER /var/www/petwatch
+git clone https://github.com/SEU-USUARIO/pet-cam.git /var/www/petwatch
+cd /var/www/petwatch
+npm ci
+```
+
+O build do Vite embute a URL de sinalização em tempo de build — passe ela na frente do comando:
+
+```bash
+VITE_SIGNAL_URL=wss://signal.petwatch.seudominio.com npm run build
+```
+
+Isso gera `dist/` com o site já apontando pro seu servidor de sinalização.
+
+### 3. Rodar o servidor de sinalização como serviço (systemd)
+
+Crie `/etc/systemd/system/petwatch-signal.service`:
+
+```ini
+[Unit]
+Description=PetWatch signaling server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/petwatch
+Environment=ALLOWED_ORIGINS=https://petwatch.seudominio.com
+Environment=SIGNAL_PORT=8787
+ExecStart=/usr/bin/node server/signal.js
+Restart=on-failure
+User=www-data
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now petwatch-signal
+sudo systemctl status petwatch-signal
+```
+
+### 4. Caddyfile (HTTPS automático + proxy do WebSocket)
+
+Edite `/etc/caddy/Caddyfile`:
+
+```
+petwatch.seudominio.com {
+    root * /var/www/petwatch/dist
+    encode gzip
+    file_server
+}
+
+signal.petwatch.seudominio.com {
+    reverse_proxy 127.0.0.1:8787
+}
+```
+
+```bash
+sudo systemctl reload caddy
+```
+
+Pronto — abra `https://petwatch.seudominio.com` no navegador. O Caddy já emitiu os certificados
+sozinho.
+
+### 5. Trancar a porta do servidor de sinalização
+
+O Node está escutando em todas as interfaces (`0.0.0.0:8787`), e o Caddy faz proxy pra ele —
+mas se a porta 8787 continuar acessível direto de fora, alguém poderia falar com o servidor de
+sinalização sem passar pelo HTTPS/Caddy. Feche ela no firewall, deixando só 80/443/22 públicas:
+
+```bash
+sudo ufw allow 22
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw deny 8787
+sudo ufw enable
+```
+
+### Atualizando depois de mudanças no código
+
+```bash
+cd /var/www/petwatch
+git pull
+npm ci
+VITE_SIGNAL_URL=wss://signal.petwatch.seudominio.com npm run build
+sudo systemctl restart petwatch-signal
+```
+
+(O frontend não precisa reiniciar nada — o Caddy já serve o `dist/` novo assim que o build
+termina.)
 
 ## 4. TURN (opcional, mas recomendado para uso "de qualquer lugar")
 
