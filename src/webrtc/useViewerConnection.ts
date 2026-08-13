@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SignalingClient } from "./signalingClient";
 import { buildIceServers } from "./iceServers";
 import { useTranslation } from "../i18n/I18nContext";
+import { uuid } from "../utils/uuid";
 import type { CameraStatusMessage } from "./types";
 
 export type ViewerStatus = "connecting" | "connected" | "disconnected";
@@ -33,7 +34,7 @@ export function useViewerConnection({ room, useStun }: UseViewerConnectionOption
       const activePc = pc;
       signal = new SignalingClient();
       const activeSignal = signal;
-      const id = crypto.randomUUID();
+      const id = uuid();
       const remote = new MediaStream();
       setRemoteStream(remote);
 

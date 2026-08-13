@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { uuid } from "../utils/uuid";
 import type { CameraConfig } from "../types/camera";
 
 const STORAGE_KEY = "petwatch:cameras";
@@ -10,7 +11,7 @@ function load(): CameraConfig[] {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     return parsed.map((c: Partial<CameraConfig>) => ({
-      id: c.id ?? crypto.randomUUID(),
+      id: c.id ?? uuid(),
       label: c.label ?? "Câmera",
       deviceId: c.deviceId ?? "",
       micEnabled: c.micEnabled ?? false,
@@ -34,7 +35,7 @@ export function useCameraConfigs() {
   const addCamera = useCallback(
     (label: string, deviceId: string) => {
       const config: CameraConfig = {
-        id: crypto.randomUUID(),
+        id: uuid(),
         label: label.trim() || `Câmera ${configs.length + 1}`,
         deviceId,
         micEnabled: false,

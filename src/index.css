@@ -13,4 +13,8 @@ body,
 
 body {
   color-scheme: dark;
+  /* explicit, not just color-scheme: some older engines default the
+     initial-containing-block to white regardless, which read as an odd
+     flash before anything mounts */
+  background: #05070a;
 }

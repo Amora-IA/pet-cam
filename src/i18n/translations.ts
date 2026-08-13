@@ -33,6 +33,8 @@ export const translations = {
     "tile.removeTitle": "Remover câmera",
     "talkback.noWebAudio": "Web Audio API não suportada neste navegador.",
     "talkback.micDenied": "Não foi possível acessar o microfone.",
+    "tile.recordingUnsupported":
+      "Este navegador não grava clipes automaticamente, mas o modo ao vivo funciona normalmente.",
 
     "timeline.header": "EVENTOS GRAVADOS",
     "timeline.emptyLine1": "Nenhum evento ainda.",
@@ -129,6 +131,8 @@ export const translations = {
     "tile.removeTitle": "Remove camera",
     "talkback.noWebAudio": "Web Audio API not supported in this browser.",
     "talkback.micDenied": "Couldn't access the microphone.",
+    "tile.recordingUnsupported":
+      "This browser can't auto-record clips, but live viewing still works fine.",
 
     "timeline.header": "RECORDED EVENTS",
     "timeline.emptyLine1": "No events yet.",

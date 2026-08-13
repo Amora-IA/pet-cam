@@ -67,7 +67,7 @@ export function CameraTile({
     sensitivity,
   });
 
-  const { isRecording } = useRecorder({
+  const { isRecording, isRecordingSupported } = useRecorder({
     stream,
     videoRef,
     isMotion,
@@ -194,6 +194,9 @@ export function CameraTile({
       </div>
 
       {talkError && <div className="camera-tile__talk-error">{talkError}</div>}
+      {!isRecordingSupported && (
+        <div className="camera-tile__talk-error">{t("tile.recordingUnsupported")}</div>
+      )}
 
       <audio ref={remoteAudioRef} autoPlay style={{ display: "none" }} />
 

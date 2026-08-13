@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { saveClip, pruneOldest } from "../db/clipsDb";
+import { uuid } from "../utils/uuid";
 import type { ClipRecord } from "../types/clip";
 
 interface UseRecorderOptions {
@@ -13,6 +14,8 @@ interface UseRecorderOptions {
   maxStorageBytes?: number;
   onClipSaved?: (clip: ClipRecord) => void;
 }
+
+const isRecorderSupported = typeof window !== "undefined" && "MediaRecorder" in window;
 
 function pickMimeType(): string | undefined {
   const candidates = [
@@ -66,7 +69,7 @@ export function useRecorder({
 
   const startRecording = useCallback(
     (thumbnail: string) => {
-      if (!stream || recorderRef.current) return;
+      if (!stream || recorderRef.current || !isRecorderSupported) return;
       const mimeType = pickMimeType();
       const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       chunksRef.current = [];
@@ -84,7 +87,7 @@ export function useRecorder({
 
         if (blob.size > 1000 && durationMs > 500) {
           const record: ClipRecord = {
-            id: crypto.randomUUID(),
+            id: uuid(),
             cameraId,
             cameraLabel,
             startedAt: startedAtRef.current,
@@ -126,5 +129,5 @@ export function useRecorder({
     return () => stopRecording();
   }, [stopRecording]);
 
-  return { isRecording };
+  return { isRecording, isRecordingSupported: isRecorderSupported };
 }
