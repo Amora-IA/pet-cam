@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ClipRecord } from "../types/clip";
 import { getClipBlob } from "../db/clipsDb";
 import { formatTimestamp } from "../hooks/useClock";
+import { useTranslation } from "../i18n/I18nContext";
 
 interface ClipPlayerProps {
   clip: ClipRecord;
@@ -9,6 +10,7 @@ interface ClipPlayerProps {
 }
 
 export function ClipPlayer({ clip, onClose }: ClipPlayerProps) {
+  const { t } = useTranslation();
   const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export function ClipPlayer({ clip, onClose }: ClipPlayerProps) {
         {url ? (
           <video src={url} controls autoPlay className="clip-player__video" />
         ) : (
-          <div className="clip-player__loading">Carregando clipe...</div>
+          <div className="clip-player__loading">{t("clipPlayer.loading")}</div>
         )}
       </div>
     </div>

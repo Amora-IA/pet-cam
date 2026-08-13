@@ -7,6 +7,7 @@ import { useRecorder } from "../hooks/useRecorder";
 import { useMotionAlert } from "../hooks/useMotionAlert";
 import { useTalkback } from "../hooks/useTalkback";
 import { useBroadcaster } from "../webrtc/useBroadcaster";
+import { useTranslation } from "../i18n/I18nContext";
 import type { RoomCredentials } from "../webrtc/createRoom";
 import type { CameraConfig } from "../types/camera";
 import type { ClipRecord } from "../types/clip";
@@ -40,6 +41,7 @@ export function CameraTile({
   onClipSaved,
   onLiveChange,
 }: CameraTileProps) {
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const { stream, status, error, devices } = useCamera({
@@ -150,7 +152,7 @@ export function CameraTile({
         <div className="camera-tile__actions">
           <button
             className={`camera-tile__talk ${isTalking ? "is-active" : ""}`}
-            title="Segure para falar com o pet (mic → caixas de som deste dispositivo)"
+            title={t("tile.talkTitle")}
             onMouseDown={startTalk}
             onMouseUp={stopTalk}
             onMouseLeave={stopTalk}
@@ -163,24 +165,29 @@ export function CameraTile({
               stopTalk();
             }}
           >
-            {isTalking ? "🔊 FALANDO" : "🎙 FALAR"}
+            {isTalking ? t("tile.talking") : t("tile.talk")}
           </button>
-          <button className="camera-tile__snapshot" title="Salvar foto" onClick={handleSnapshot}>
+          <button
+            className="camera-tile__snapshot"
+            title={t("tile.snapshotTitle")}
+            onClick={handleSnapshot}
+          >
             📷
           </button>
           <button
             className={`camera-tile__pair ${room ? "is-active" : ""}`}
-            title="Assistir remotamente pelo celular"
+            title={t("tile.pairTitle")}
             onClick={() => setShowPairPanel(true)}
           >
-            📡 PAREAR{room && viewerCount > 0 ? ` (${viewerCount})` : ""}
+            {t("tile.pair")}
+            {room && viewerCount > 0 ? ` (${viewerCount})` : ""}
           </button>
           {canFocus && (
             <button className="camera-tile__focus" onClick={onToggleFocus}>
-              {isFocused ? "⤢ GRID" : "⤢ FOCAR"}
+              {isFocused ? t("tile.focusGrid") : t("tile.focusCamera")}
             </button>
           )}
-          <button className="camera-tile__remove" title="Remover câmera" onClick={onRemove}>
+          <button className="camera-tile__remove" title={t("tile.removeTitle")} onClick={onRemove}>
             ✕
           </button>
         </div>

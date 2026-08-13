@@ -10,9 +10,11 @@ import { DonateModal } from "./components/DonateModal";
 import { EventTimeline } from "./components/EventTimeline";
 import { ClipPlayer } from "./components/ClipPlayer";
 import { listClips, deleteClip, getTotalStorageBytes } from "./db/clipsDb";
+import { useTranslation } from "./i18n/I18nContext";
 import type { ClipRecord } from "./types/clip";
 
 function App() {
+  const { t } = useTranslation();
   const now = useClock();
   const { configs, addCamera, removeCamera } = useCameraConfigs();
 
@@ -87,9 +89,9 @@ function App() {
       <main className="app__main">
         {configs.length === 0 ? (
           <div className="app__empty">
-            <p>Nenhuma câmera configurada ainda.</p>
+            <p>{t("app.empty")}</p>
             <button className="app__empty-add" onClick={() => setShowAddCamera(true)}>
-              + ADICIONAR PRIMEIRA CÂMERA
+              {t("app.addFirst")}
             </button>
           </div>
         ) : (

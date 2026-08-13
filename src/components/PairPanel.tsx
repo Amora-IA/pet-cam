@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
-import { createRoom, type RoomCredentials } from "../webrtc/createRoom";
+import { createRoom, CreateRoomError, type RoomCredentials } from "../webrtc/createRoom";
+import { useTranslation } from "../i18n/I18nContext";
 
 interface PairPanelProps {
   cameraLabel: string;
@@ -29,6 +30,7 @@ export function PairPanel({
   viewerCount,
   onClose,
 }: PairPanelProps) {
+  const { t } = useTranslation();
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [lanIp, setLanIp] = useState<string | null>(null);
@@ -45,16 +47,12 @@ export function PairPanel({
         if (!cancelled) setLanIp(data.ips[0] ?? null);
       })
       .catch(() => {
-        if (!cancelled) {
-          setIpError(
-            "Servidor de sinalização não encontrado. Rode o projeto com `npm run dev:all`."
-          );
-        }
+        if (!cancelled) setIpError(t("pair.signalNotFound"));
       });
     return () => {
       cancelled = true;
     };
-  }, [isBroadcasting]);
+  }, [isBroadcasting, t]);
 
   const shareUrl =
     room &&
@@ -85,7 +83,8 @@ export function PairPanel({
       const credentials = await createRoom();
       onStartBroadcast(credentials);
     } catch (err) {
-      setCreateError(err instanceof Error ? err.message : "Falha ao criar sala.");
+      const code = err instanceof CreateRoomError ? err.code : "unknown";
+      setCreateError(code === "rate_limited" ? t("pair.errorRateLimited") : t("pair.errorGeneric"));
     } finally {
       setCreating(false);
     }
@@ -95,7 +94,7 @@ export function PairPanel({
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
-          <span>PAREAR — {cameraLabel}</span>
+          <span>{t("pair.title", { label: cameraLabel })}</span>
           <button onClick={onClose}>✕</button>
         </div>
         <div className="modal__body pair-panel">
@@ -105,10 +104,10 @@ export function PairPanel({
             disabled={creating}
           >
             {creating
-              ? "CRIANDO SALA..."
+              ? t("pair.creating")
               : isBroadcasting
-                ? "📡 TRANSMISSÃO: ON"
-                : "📡 TRANSMISSÃO: OFF"}
+                ? t("pair.broadcastOn")
+                : t("pair.broadcastOff")}
           </button>
 
           {createError && <p className="modal__error">{createError}</p>}
@@ -116,9 +115,7 @@ export function PairPanel({
           {isBroadcasting && room && (
             <>
               <div className="pair-panel__code">{room.code}</div>
-              <p className="modal__hint">
-                Este código é novo a cada vez que você liga a transmissão e expira sozinho.
-              </p>
+              <p className="modal__hint">{t("pair.codeHint")}</p>
 
               {ipError && <p className="modal__error">{ipError}</p>}
 
@@ -127,21 +124,17 @@ export function PairPanel({
                   {qrDataUrl && (
                     <img className="pair-panel__qr" src={qrDataUrl} alt="QR code de pareamento" />
                   )}
-                  <p className="modal__hint">
-                    Escaneie o QR (mesma rede Wi-Fi, ou de qualquer lugar se publicado) ou abra o
-                    link:
-                  </p>
+                  <p className="modal__hint">{t("pair.scanHint")}</p>
                   <code className="pair-panel__url">{shareUrl}</code>
                 </>
               )}
 
               <label className="pair-panel__stun">
                 <input type="checkbox" checked={useStun} onChange={onToggleStun} />
-                Usar STUN público (ajuda em redes mais restritas; contata a internet apenas
-                para descobrir o IP — o vídeo continua ponto-a-ponto)
+                {t("pair.stunLabel")}
               </label>
 
-              <p className="modal__hint">{viewerCount} dispositivo(s) assistindo agora.</p>
+              <p className="modal__hint">{t("pair.viewerCount", { n: viewerCount })}</p>
             </>
           )}
         </div>

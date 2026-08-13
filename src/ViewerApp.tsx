@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useViewerConnection } from "./webrtc/useViewerConnection";
 import { formatTimestamp } from "./hooks/useClock";
 import { useClock } from "./hooks/useClock";
+import { useTranslation } from "./i18n/I18nContext";
+import { LanguageSwitch } from "./components/StatusBar";
 import "./App.css";
 import "./ViewerApp.css";
 
@@ -11,6 +13,7 @@ interface ViewerAppProps {
 }
 
 export function ViewerApp({ initialRoom, useStun }: ViewerAppProps) {
+  const { t, locale, setLocale } = useTranslation();
   const [room, setRoom] = useState(initialRoom);
   const [roomInput, setRoomInput] = useState(initialRoom);
   const now = useClock();
@@ -30,16 +33,17 @@ export function ViewerApp({ initialRoom, useStun }: ViewerAppProps) {
     return (
       <div className="viewer-join">
         <div className="viewer-join__box">
+          <LanguageSwitch locale={locale} onChange={setLocale} />
           <h1>◉ PETWATCH</h1>
-          <p>Digite o código de pareamento mostrado no computador da câmera.</p>
+          <p>{t("viewer.joinPrompt")}</p>
           <input
             value={roomInput}
             onChange={(e) => setRoomInput(e.target.value.toUpperCase())}
-            placeholder="EX: A1B2C3"
+            placeholder={t("viewer.codePlaceholder")}
             maxLength={8}
           />
           <button onClick={() => setRoom(roomInput.trim())} disabled={!roomInput.trim()}>
-            CONECTAR
+            {t("viewer.connect")}
           </button>
         </div>
       </div>
@@ -53,9 +57,7 @@ export function ViewerApp({ initialRoom, useStun }: ViewerAppProps) {
 
         {status !== "connected" && (
           <div className="camera-view__overlay-message">
-            <p>
-              {status === "connecting" ? "CONECTANDO À CÂMERA..." : "CONEXÃO PERDIDA"}
-            </p>
+            <p>{status === "connecting" ? t("viewer.connecting") : t("viewer.connectionLost")}</p>
           </div>
         )}
 
@@ -87,7 +89,7 @@ export function ViewerApp({ initialRoom, useStun }: ViewerAppProps) {
         {cameraStatus && (
           <div className="camera-view__bottom-right">
             <div className={`camera-view__motion ${cameraStatus.isMotion ? "is-active" : ""}`}>
-              <span className="camera-view__motion-label">MOV</span>
+              <span className="camera-view__motion-label">{t("camera.motionLabel")}</span>
               <div className="camera-view__motion-bar">
                 <div
                   className="camera-view__motion-bar-fill"
@@ -101,7 +103,11 @@ export function ViewerApp({ initialRoom, useStun }: ViewerAppProps) {
 
       <div className="viewer-app__toolbar">
         <span className={`viewer-app__status is-${status}`}>
-          {status === "connected" ? "AO VIVO" : status === "connecting" ? "CONECTANDO" : "OFFLINE"}
+          {status === "connected"
+            ? t("viewer.statusLive")
+            : status === "connecting"
+              ? t("viewer.statusConnecting")
+              : t("viewer.statusOffline")}
         </span>
         <button
           className="viewer-app__talk"
@@ -118,9 +124,10 @@ export function ViewerApp({ initialRoom, useStun }: ViewerAppProps) {
           }}
           disabled={!!micError}
         >
-          🎙 SEGURE PARA FALAR
+          {t("viewer.holdToTalk")}
         </button>
         {micError && <span className="viewer-app__mic-error">{micError}</span>}
+        <LanguageSwitch locale={locale} onChange={setLocale} />
       </div>
     </div>
   );

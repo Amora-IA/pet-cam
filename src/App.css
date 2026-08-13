@@ -586,6 +586,41 @@ body,
   border-color: var(--accent-dim);
 }
 
+/* ---------- Language switch ---------- */
+
+.lang-switch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.lang-switch button {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.lang-switch button.is-active {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.viewer-app__toolbar .lang-switch {
+  margin-left: auto;
+}
+
+.viewer-join__box .lang-switch {
+  align-self: center;
+  margin-bottom: 8px;
+}
+
 /* ---------- Camera tile ---------- */
 
 .camera-tile {

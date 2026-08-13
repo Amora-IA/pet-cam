@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "../i18n/I18nContext";
 
 export function useTalkback() {
+  const { t } = useTranslation();
   const [isTalking, setIsTalking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -29,7 +31,7 @@ export function useTalkback() {
       const Ctor =
         window.AudioContext ||
         (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!Ctor) throw new Error("Web Audio API não suportada neste navegador.");
+      if (!Ctor) throw new Error(t("talkback.noWebAudio"));
       const ctx = new Ctor();
       ctxRef.current = ctx;
       const source = ctx.createMediaStreamSource(stream);
@@ -41,11 +43,11 @@ export function useTalkback() {
       setIsTalking(true);
     } catch (err) {
       const e = err as DOMException;
-      setError(e.message || "Não foi possível acessar o microfone.");
+      setError(e.message || t("talkback.micDenied"));
       streamRef.current?.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => () => stop(), [stop]);
 

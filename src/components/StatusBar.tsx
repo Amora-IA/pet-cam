@@ -1,4 +1,6 @@
 import { formatClock } from "../hooks/useClock";
+import { useTranslation } from "../i18n/I18nContext";
+import type { Locale } from "../i18n/translations";
 
 interface StatusBarProps {
   now: Date;
@@ -33,6 +35,8 @@ export function StatusBar({
   onAddCamera,
   onDonate,
 }: StatusBarProps) {
+  const { t, locale, setLocale } = useTranslation();
+
   return (
     <header className="status-bar">
       <div className="status-bar__brand">
@@ -44,7 +48,7 @@ export function StatusBar({
 
       <div className="status-bar__controls">
         <label className="status-bar__sensitivity">
-          SENSIBILIDADE
+          {t("statusBar.sensitivity")}
           <input
             type="range"
             min={0}
@@ -58,35 +62,57 @@ export function StatusBar({
           className={`status-bar__toggle ${soundAlertsEnabled ? "is-on" : ""}`}
           onClick={onToggleSoundAlerts}
         >
-          {soundAlertsEnabled ? "🔔 SOM: ON" : "🔕 SOM: OFF"}
+          {soundAlertsEnabled ? t("statusBar.soundOn") : t("statusBar.soundOff")}
         </button>
 
         <button
           className={`status-bar__toggle ${pushAlertsEnabled ? "is-on" : ""}`}
           onClick={onTogglePushAlerts}
         >
-          {pushAlertsEnabled ? "📲 PUSH: ON" : "📲 PUSH: OFF"}
+          {pushAlertsEnabled ? t("statusBar.pushOn") : t("statusBar.pushOff")}
         </button>
 
         <button
           className={`status-bar__toggle ${monitoringEnabled ? "is-on" : ""}`}
           onClick={onToggleMonitoring}
         >
-          {monitoringEnabled ? "MONITORAMENTO: ON" : "MONITORAMENTO: OFF"}
+          {monitoringEnabled ? t("statusBar.monitoringOn") : t("statusBar.monitoringOff")}
         </button>
 
         <button className="status-bar__add-camera" onClick={onAddCamera}>
-          + CÂMERA
+          {t("statusBar.addCamera")}
         </button>
+
+        <LanguageSwitch locale={locale} onChange={setLocale} />
       </div>
 
       <div className="status-bar__meta">
         <button className="status-bar__donate" onClick={onDonate}>
-          💚 APOIAR
+          {t("statusBar.donate")}
         </button>
-        <span>{storageUsedMb.toFixed(1)} MB usados</span>
+        <span>{t("statusBar.storageUsed", { mb: storageUsedMb.toFixed(1) })}</span>
         <span className="status-bar__clock">{formatClock(now)}</span>
       </div>
     </header>
+  );
+}
+
+export function LanguageSwitch({
+  locale,
+  onChange,
+}: {
+  locale: Locale;
+  onChange: (l: Locale) => void;
+}) {
+  return (
+    <div className="lang-switch">
+      <button className={locale === "pt" ? "is-active" : ""} onClick={() => onChange("pt")}>
+        PT
+      </button>
+      <span>/</span>
+      <button className={locale === "en" ? "is-active" : ""} onClick={() => onChange("en")}>
+        EN
+      </button>
+    </div>
   );
 }

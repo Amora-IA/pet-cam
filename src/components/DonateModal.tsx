@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { buildPixPayload } from "../pix/buildPixPayload";
+import { useTranslation } from "../i18n/I18nContext";
 
 const PIX = { key: "beatriz@webne.com.br", name: "Beatriz Amaral", city: "Porto Alegre" };
 
@@ -9,6 +10,7 @@ interface DonateModalProps {
 }
 
 export function DonateModal({ onClose }: DonateModalProps) {
+  const { t } = useTranslation();
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const payload = buildPixPayload(PIX);
@@ -29,22 +31,19 @@ export function DonateModal({ onClose }: DonateModalProps) {
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
-          <span>APOIAR O PROJETO</span>
+          <span>{t("donate.title")}</span>
           <button onClick={onClose}>✕</button>
         </div>
         <div className="modal__body pair-panel">
-          <p className="modal__hint">
-            O PetWatch é gratuito e open source. Se ele te ajudou, considere doar qualquer
-            valor via Pix — é totalmente opcional.
-          </p>
+          <p className="modal__hint">{t("donate.blurb")}</p>
 
           {qrDataUrl && <img className="pair-panel__qr" src={qrDataUrl} alt="QR code Pix" />}
 
-          <p className="modal__hint">Escaneie com o app do seu banco, ou copie a chave:</p>
+          <p className="modal__hint">{t("donate.scanHint")}</p>
           <code className="pair-panel__url">{PIX.key}</code>
 
           <button className="modal__submit" onClick={handleCopy}>
-            {copied ? "COPIADO!" : "COPIAR CÓDIGO PIX"}
+            {copied ? t("donate.copied") : t("donate.copy")}
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SignalingClient } from "./signalingClient";
 import { buildIceServers } from "./iceServers";
+import { useTranslation } from "../i18n/I18nContext";
 import type { CameraStatusMessage } from "./types";
 
 export type ViewerStatus = "connecting" | "connected" | "disconnected";
@@ -11,6 +12,7 @@ interface UseViewerConnectionOptions {
 }
 
 export function useViewerConnection({ room, useStun }: UseViewerConnectionOptions) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<ViewerStatus>("connecting");
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [cameraStatus, setCameraStatus] = useState<CameraStatusMessage | null>(null);
@@ -86,7 +88,7 @@ export function useViewerConnection({ room, useStun }: UseViewerConnectionOption
           micTrackRef.current = track;
           activePc.addTrack(track, micStream);
         } catch {
-          setMicError("Microfone indisponível — só será possível assistir.");
+          setMicError(t("viewer.micUnavailable"));
         }
       }
 

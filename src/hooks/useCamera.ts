@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "../i18n/I18nContext";
 
 export type CameraStatus = "idle" | "requesting" | "live" | "error" | "denied";
 
@@ -8,6 +9,7 @@ interface UseCameraOptions {
 }
 
 export function useCamera({ audio = false, deviceId }: UseCameraOptions = {}) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState<CameraStatus>("idle");
   const [error, setError] = useState<string | null>(null);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -46,16 +48,16 @@ export function useCamera({ audio = false, deviceId }: UseCameraOptions = {}) {
       const e = err as DOMException;
       if (e.name === "NotAllowedError" || e.name === "PermissionDeniedError") {
         setStatus("denied");
-        setError("Permissão de câmera negada. Autorize o acesso nas configurações do navegador.");
+        setError(t("camera.errorPermissionDenied"));
       } else if (e.name === "NotFoundError") {
         setStatus("error");
-        setError("Nenhuma câmera encontrada neste dispositivo.");
+        setError(t("camera.errorNotFound"));
       } else {
         setStatus("error");
-        setError(e.message || "Falha ao acessar a câmera.");
+        setError(e.message || t("camera.errorGeneric"));
       }
     }
-  }, [audio, deviceId, refreshDevices, stop]);
+  }, [audio, deviceId, refreshDevices, stop, t]);
 
   useEffect(() => {
     start();

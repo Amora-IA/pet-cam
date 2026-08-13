@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "../i18n/I18nContext";
 
 interface AddCameraModalProps {
   existingDeviceIds: string[];
@@ -7,6 +8,7 @@ interface AddCameraModalProps {
 }
 
 export function AddCameraModal({ existingDeviceIds, onAdd, onClose }: AddCameraModalProps) {
+  const { t } = useTranslation();
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
   const [label, setLabel] = useState("");
@@ -29,11 +31,11 @@ export function AddCameraModal({ existingDeviceIds, onAdd, onClose }: AddCameraM
         setDevices(videoInputs);
         if (videoInputs.length > 0) {
           setSelectedDeviceId(videoInputs[0].deviceId);
-          setLabel(videoInputs[0].label || `Câmera ${videoInputs.length}`);
+          setLabel(videoInputs[0].label || t("addCamera.fallbackLabel", { n: videoInputs.length }));
         }
       } catch (err) {
         const e = err as DOMException;
-        setError(e.message || "Não foi possível listar as câmeras.");
+        setError(e.message || t("addCamera.listError"));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -42,6 +44,7 @@ export function AddCameraModal({ existingDeviceIds, onAdd, onClose }: AddCameraM
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const alreadyAdded = new Set(existingDeviceIds);
@@ -51,25 +54,22 @@ export function AddCameraModal({ existingDeviceIds, onAdd, onClose }: AddCameraM
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
-          <span>ADICIONAR CÂMERA</span>
+          <span>{t("addCamera.title")}</span>
           <button onClick={onClose}>✕</button>
         </div>
 
         <div className="modal__body">
-          {loading && <p className="modal__hint">Buscando câmeras disponíveis...</p>}
+          {loading && <p className="modal__hint">{t("addCamera.loading")}</p>}
           {error && <p className="modal__error">{error}</p>}
 
           {!loading && !error && availableDevices.length === 0 && (
-            <p className="modal__hint">
-              Nenhuma câmera nova encontrada. Todas as câmeras conectadas já foram adicionadas, ou
-              conecte uma webcam USB adicional e tente novamente.
-            </p>
+            <p className="modal__hint">{t("addCamera.noneFound")}</p>
           )}
 
           {!loading && availableDevices.length > 0 && (
             <>
               <label className="modal__field">
-                DISPOSITIVO
+                {t("addCamera.device")}
                 <select
                   value={selectedDeviceId}
                   onChange={(e) => {
@@ -80,19 +80,19 @@ export function AddCameraModal({ existingDeviceIds, onAdd, onClose }: AddCameraM
                 >
                   {availableDevices.map((d, i) => (
                     <option key={d.deviceId} value={d.deviceId}>
-                      {d.label || `Câmera ${i + 1}`}
+                      {d.label || t("addCamera.fallbackLabel", { n: i + 1 })}
                     </option>
                   ))}
                 </select>
               </label>
 
               <label className="modal__field">
-                NOME
+                {t("addCamera.name")}
                 <input
                   type="text"
                   value={label}
                   onChange={(e) => setLabel(e.target.value)}
-                  placeholder="Ex: Sala, Quintal, Quarto do pet"
+                  placeholder={t("addCamera.namePlaceholder")}
                 />
               </label>
 
@@ -102,7 +102,7 @@ export function AddCameraModal({ existingDeviceIds, onAdd, onClose }: AddCameraM
                   if (selectedDeviceId) onAdd(label, selectedDeviceId);
                 }}
               >
-                ADICIONAR
+                {t("addCamera.submit")}
               </button>
             </>
           )}

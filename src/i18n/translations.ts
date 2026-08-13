@@ -1,0 +1,188 @@
+export type Locale = "pt" | "en";
+
+export const translations = {
+  pt: {
+    "statusBar.sensitivity": "SENSIBILIDADE",
+    "statusBar.soundOn": "🔔 SOM: ON",
+    "statusBar.soundOff": "🔕 SOM: OFF",
+    "statusBar.pushOn": "📲 PUSH: ON",
+    "statusBar.pushOff": "📲 PUSH: OFF",
+    "statusBar.monitoringOn": "MONITORAMENTO: ON",
+    "statusBar.monitoringOff": "MONITORAMENTO: OFF",
+    "statusBar.addCamera": "+ CÂMERA",
+    "statusBar.donate": "💚 APOIAR",
+    "statusBar.storageUsed": "{mb} MB usados",
+
+    "camera.requesting": "SOLICITANDO ACESSO À CÂMERA...",
+    "camera.off": "CÂMERA DESLIGADA",
+    "camera.monitoring": "MONITORANDO",
+    "camera.motionLabel": "MOV",
+    "camera.errorPermissionDenied":
+      "Permissão de câmera negada. Autorize o acesso nas configurações do navegador.",
+    "camera.errorNotFound": "Nenhuma câmera encontrada neste dispositivo.",
+    "camera.errorGeneric": "Falha ao acessar a câmera.",
+
+    "tile.talkTitle": "Segure para falar com o pet (mic → caixas de som deste dispositivo)",
+    "tile.talking": "🔊 FALANDO",
+    "tile.talk": "🎙 FALAR",
+    "tile.snapshotTitle": "Salvar foto",
+    "tile.pairTitle": "Assistir remotamente pelo celular",
+    "tile.pair": "📡 PAREAR",
+    "tile.focusGrid": "⤢ GRID",
+    "tile.focusCamera": "⤢ FOCAR",
+    "tile.removeTitle": "Remover câmera",
+    "talkback.noWebAudio": "Web Audio API não suportada neste navegador.",
+    "talkback.micDenied": "Não foi possível acessar o microfone.",
+
+    "timeline.header": "EVENTOS GRAVADOS",
+    "timeline.emptyLine1": "Nenhum evento ainda.",
+    "timeline.emptyLine2": "Assim que houver movimento, os clipes aparecem aqui.",
+    "timeline.motionDetected": "Movimento detectado",
+    "timeline.manualRecording": "Gravação manual",
+    "timeline.deleteTitle": "Apagar",
+
+    "clipPlayer.loading": "Carregando clipe...",
+
+    "addCamera.title": "ADICIONAR CÂMERA",
+    "addCamera.loading": "Buscando câmeras disponíveis...",
+    "addCamera.listError": "Não foi possível listar as câmeras.",
+    "addCamera.noneFound":
+      "Nenhuma câmera nova encontrada. Todas as câmeras conectadas já foram adicionadas, ou conecte uma webcam USB adicional e tente novamente.",
+    "addCamera.device": "DISPOSITIVO",
+    "addCamera.name": "NOME",
+    "addCamera.namePlaceholder": "Ex: Sala, Quintal, Quarto do pet",
+    "addCamera.submit": "ADICIONAR",
+    "addCamera.fallbackLabel": "Câmera {n}",
+
+    "pair.title": "PAREAR — {label}",
+    "pair.creating": "CRIANDO SALA...",
+    "pair.broadcastOn": "📡 TRANSMISSÃO: ON",
+    "pair.broadcastOff": "📡 TRANSMISSÃO: OFF",
+    "pair.signalNotFound":
+      "Servidor de sinalização não encontrado. Rode o projeto com `npm run dev:all`.",
+    "pair.codeHint": "Este código é novo a cada vez que você liga a transmissão e expira sozinho.",
+    "pair.scanHint":
+      "Escaneie o QR (mesma rede Wi-Fi, ou de qualquer lugar se publicado) ou abra o link:",
+    "pair.stunLabel":
+      "Usar STUN público (ajuda em redes mais restritas; contata a internet apenas para descobrir o IP — o vídeo continua ponto-a-ponto)",
+    "pair.viewerCount": "{n} dispositivo(s) assistindo agora.",
+    "pair.errorRateLimited": "Muitas tentativas — aguarde um minuto e tente novamente.",
+    "pair.errorGeneric": "Falha ao criar sala.",
+
+    "donate.title": "APOIAR O PROJETO",
+    "donate.blurb":
+      "O PetWatch é gratuito e open source. Se ele te ajudou, considere doar qualquer valor via Pix — é totalmente opcional.",
+    "donate.scanHint": "Escaneie com o app do seu banco, ou copie a chave:",
+    "donate.copy": "COPIAR CÓDIGO PIX",
+    "donate.copied": "COPIADO!",
+
+    "app.empty": "Nenhuma câmera configurada ainda.",
+    "app.addFirst": "+ ADICIONAR PRIMEIRA CÂMERA",
+
+    "viewer.joinPrompt": "Digite o código de pareamento mostrado no computador da câmera.",
+    "viewer.codePlaceholder": "EX: A1B2C3",
+    "viewer.connect": "CONECTAR",
+    "viewer.connecting": "CONECTANDO À CÂMERA...",
+    "viewer.connectionLost": "CONEXÃO PERDIDA",
+    "viewer.statusLive": "AO VIVO",
+    "viewer.statusConnecting": "CONECTANDO",
+    "viewer.statusOffline": "OFFLINE",
+    "viewer.holdToTalk": "🎙 SEGURE PARA FALAR",
+    "viewer.micUnavailable": "Microfone indisponível — só será possível assistir.",
+
+    "notif.title": "PetWatch — movimento detectado",
+    "notif.body": "{label}: algo se mexeu agora.",
+  },
+  en: {
+    "statusBar.sensitivity": "SENSITIVITY",
+    "statusBar.soundOn": "🔔 SOUND: ON",
+    "statusBar.soundOff": "🔕 SOUND: OFF",
+    "statusBar.pushOn": "📲 PUSH: ON",
+    "statusBar.pushOff": "📲 PUSH: OFF",
+    "statusBar.monitoringOn": "MONITORING: ON",
+    "statusBar.monitoringOff": "MONITORING: OFF",
+    "statusBar.addCamera": "+ CAMERA",
+    "statusBar.donate": "💚 SUPPORT",
+    "statusBar.storageUsed": "{mb} MB used",
+
+    "camera.requesting": "REQUESTING CAMERA ACCESS...",
+    "camera.off": "CAMERA OFF",
+    "camera.monitoring": "MONITORING",
+    "camera.motionLabel": "MOT",
+    "camera.errorPermissionDenied":
+      "Camera permission denied. Allow access in your browser settings.",
+    "camera.errorNotFound": "No camera found on this device.",
+    "camera.errorGeneric": "Failed to access the camera.",
+
+    "tile.talkTitle": "Hold to talk to your pet (mic → this device's speakers)",
+    "tile.talking": "🔊 TALKING",
+    "tile.talk": "🎙 TALK",
+    "tile.snapshotTitle": "Save photo",
+    "tile.pairTitle": "Watch remotely from your phone",
+    "tile.pair": "📡 PAIR",
+    "tile.focusGrid": "⤢ GRID",
+    "tile.focusCamera": "⤢ FOCUS",
+    "tile.removeTitle": "Remove camera",
+    "talkback.noWebAudio": "Web Audio API not supported in this browser.",
+    "talkback.micDenied": "Couldn't access the microphone.",
+
+    "timeline.header": "RECORDED EVENTS",
+    "timeline.emptyLine1": "No events yet.",
+    "timeline.emptyLine2": "Clips will show up here as soon as motion is detected.",
+    "timeline.motionDetected": "Motion detected",
+    "timeline.manualRecording": "Manual recording",
+    "timeline.deleteTitle": "Delete",
+
+    "clipPlayer.loading": "Loading clip...",
+
+    "addCamera.title": "ADD CAMERA",
+    "addCamera.loading": "Looking for available cameras...",
+    "addCamera.listError": "Couldn't list cameras.",
+    "addCamera.noneFound":
+      "No new camera found. All connected cameras are already added, or plug in an extra USB webcam and try again.",
+    "addCamera.device": "DEVICE",
+    "addCamera.name": "NAME",
+    "addCamera.namePlaceholder": "e.g. Living room, Backyard, Pet's room",
+    "addCamera.submit": "ADD",
+    "addCamera.fallbackLabel": "Camera {n}",
+
+    "pair.title": "PAIR — {label}",
+    "pair.creating": "CREATING ROOM...",
+    "pair.broadcastOn": "📡 BROADCAST: ON",
+    "pair.broadcastOff": "📡 BROADCAST: OFF",
+    "pair.signalNotFound": "Signaling server not found. Run the project with `npm run dev:all`.",
+    "pair.codeHint": "This code is new every time you turn on the broadcast, and expires on its own.",
+    "pair.scanHint": "Scan the QR (same Wi-Fi, or from anywhere if published) or open the link:",
+    "pair.stunLabel":
+      "Use public STUN (helps on stricter networks; only contacts the internet to discover your IP — video stays peer-to-peer)",
+    "pair.viewerCount": "{n} device(s) watching now.",
+    "pair.errorRateLimited": "Too many attempts — wait a minute and try again.",
+    "pair.errorGeneric": "Failed to create room.",
+
+    "donate.title": "SUPPORT THE PROJECT",
+    "donate.blurb":
+      "PetWatch is free and open source. If it helped you, consider donating any amount via Pix (Brazil's instant payment system) — totally optional.",
+    "donate.scanHint": "Scan with your bank app, or copy the key:",
+    "donate.copy": "COPY PIX CODE",
+    "donate.copied": "COPIED!",
+
+    "app.empty": "No camera configured yet.",
+    "app.addFirst": "+ ADD FIRST CAMERA",
+
+    "viewer.joinPrompt": "Enter the pairing code shown on the camera's computer.",
+    "viewer.codePlaceholder": "E.G. A1B2C3",
+    "viewer.connect": "CONNECT",
+    "viewer.connecting": "CONNECTING TO CAMERA...",
+    "viewer.connectionLost": "CONNECTION LOST",
+    "viewer.statusLive": "LIVE",
+    "viewer.statusConnecting": "CONNECTING",
+    "viewer.statusOffline": "OFFLINE",
+    "viewer.holdToTalk": "🎙 HOLD TO TALK",
+    "viewer.micUnavailable": "Microphone unavailable — you'll only be able to watch.",
+
+    "notif.title": "PetWatch — motion detected",
+    "notif.body": "{label}: something just moved.",
+  },
+} as const;
+
+export type TranslationKey = keyof (typeof translations)["pt"];

@@ -1,5 +1,6 @@
 import type { ClipRecord } from "../types/clip";
 import { formatDuration, formatTimestamp } from "../hooks/useClock";
+import { useTranslation } from "../i18n/I18nContext";
 
 interface EventTimelineProps {
   clips: ClipRecord[];
@@ -9,18 +10,20 @@ interface EventTimelineProps {
 }
 
 export function EventTimeline({ clips, onSelect, onDelete, selectedId }: EventTimelineProps) {
+  const { t } = useTranslation();
+
   return (
     <aside className="event-timeline">
       <div className="event-timeline__header">
-        <span>EVENTOS GRAVADOS</span>
+        <span>{t("timeline.header")}</span>
         <span className="event-timeline__count">{clips.length}</span>
       </div>
 
       {clips.length === 0 && (
         <div className="event-timeline__empty">
-          Nenhum evento ainda.
+          {t("timeline.emptyLine1")}
           <br />
-          Assim que houver movimento, os clipes aparecem aqui.
+          {t("timeline.emptyLine2")}
         </div>
       )}
 
@@ -45,12 +48,12 @@ export function EventTimeline({ clips, onSelect, onDelete, selectedId }: EventTi
               </span>
               <span className="event-timeline__reason">
                 {clip.cameraLabel} ·{" "}
-                {clip.reason === "motion" ? "Movimento detectado" : "Gravação manual"}
+                {clip.reason === "motion" ? t("timeline.motionDetected") : t("timeline.manualRecording")}
               </span>
             </div>
             <button
               className="event-timeline__delete"
-              title="Apagar"
+              title={t("timeline.deleteTitle")}
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(clip.id);

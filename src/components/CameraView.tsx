@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 import { formatTimestamp } from "../hooks/useClock";
+import { useTranslation } from "../i18n/I18nContext";
 import type { CameraStatus } from "../hooks/useCamera";
 
 interface CameraViewProps {
@@ -14,16 +15,17 @@ interface CameraViewProps {
 
 export const CameraView = forwardRef<HTMLVideoElement, CameraViewProps>(
   ({ status, error, isRecording, isMotion, motionLevel, cameraLabel, now }, ref) => {
+    const { t } = useTranslation();
     return (
       <div className="camera-view">
         <video ref={ref} className="camera-view__video" autoPlay playsInline muted />
 
         {status !== "live" && (
           <div className="camera-view__overlay-message">
-            {status === "requesting" && <p>SOLICITANDO ACESSO À CÂMERA...</p>}
+            {status === "requesting" && <p>{t("camera.requesting")}</p>}
             {status === "denied" && <p className="camera-view__overlay-error">{error}</p>}
             {status === "error" && <p className="camera-view__overlay-error">{error}</p>}
-            {status === "idle" && <p>CÂMERA DESLIGADA</p>}
+            {status === "idle" && <p>{t("camera.off")}</p>}
           </div>
         )}
 
@@ -46,7 +48,7 @@ export const CameraView = forwardRef<HTMLVideoElement, CameraViewProps>(
             </span>
           )}
           {status === "live" && !isRecording && (
-            <span className="camera-view__standby">MONITORANDO</span>
+            <span className="camera-view__standby">{t("camera.monitoring")}</span>
           )}
         </div>
 
@@ -56,7 +58,7 @@ export const CameraView = forwardRef<HTMLVideoElement, CameraViewProps>(
 
         <div className="camera-view__bottom-right">
           <div className={`camera-view__motion ${isMotion ? "is-active" : ""}`}>
-            <span className="camera-view__motion-label">MOV</span>
+            <span className="camera-view__motion-label">{t("camera.motionLabel")}</span>
             <div className="camera-view__motion-bar">
               <div
                 className="camera-view__motion-bar-fill"

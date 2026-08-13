@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "../i18n/I18nContext";
 
 interface UseMotionAlertOptions {
   isMotion: boolean;
@@ -36,14 +37,10 @@ function playBeep() {
   });
 }
 
-function firePushNotification(cameraLabel: string) {
+function firePushNotification(title: string, body: string) {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
   try {
-    new Notification("PetWatch — movimento detectado", {
-      body: `${cameraLabel}: algo se mexeu agora.`,
-      tag: "petwatch-motion",
-      silent: true,
-    });
+    new Notification(title, { body, tag: "petwatch-motion", silent: true });
   } catch {
     // some browsers require a service worker for Notification(); ignore failures
   }
@@ -62,6 +59,7 @@ export function useMotionAlert({
   pushEnabled,
   cooldownMs = 30000,
 }: UseMotionAlertOptions) {
+  const { t } = useTranslation();
   const lastAlertAtRef = useRef(0);
   const wasMotionRef = useRef(false);
 
@@ -71,9 +69,11 @@ export function useMotionAlert({
       if (now - lastAlertAtRef.current > cooldownMs) {
         lastAlertAtRef.current = now;
         if (soundEnabled) playBeep();
-        if (pushEnabled) firePushNotification(cameraLabel);
+        if (pushEnabled) {
+          firePushNotification(t("notif.title"), t("notif.body", { label: cameraLabel }));
+        }
       }
     }
     wasMotionRef.current = isMotion;
-  }, [isMotion, soundEnabled, pushEnabled, cameraLabel, cooldownMs]);
+  }, [isMotion, soundEnabled, pushEnabled, cameraLabel, cooldownMs, t]);
 }
