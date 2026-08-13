@@ -1,15 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import legacy from '@vitejs/plugin-legacy'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  build: {
-    // Default targets recent browsers only. Old tablets/phones stuck on an
-    // outdated OS (e.g. an iPad capped at an old iOS/Safari) can't parse
-    // that output at all and just render a blank page — down-compile syntax
-    // far enough that the app at least loads and shows its own error UI
-    // instead of a silent crash, even on hardware this old.
-    target: ['es2018', 'safari12', 'ios12'],
-  },
+  plugins: [
+    react(),
+    // Vite's normal output is a <script type="module">, which very old
+    // Safari (pre-iOS 10.3) can't even load — the browser just skips the
+    // script entirely and nothing runs, JS error handling included. This
+    // plugin adds a second, classic-script build (with polyfills) that
+    // those browsers fall back to automatically.
+    legacy({
+      targets: ['defaults', 'iOS >= 9', 'Safari >= 9'],
+    }),
+  ],
 })
