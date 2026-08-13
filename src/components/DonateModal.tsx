@@ -4,6 +4,7 @@ import { buildPixPayload } from "../pix/buildPixPayload";
 import { useTranslation } from "../i18n/I18nContext";
 
 const PIX = { key: "beatriz@webne.com.br", name: "Beatriz Amaral", city: "Porto Alegre" };
+const BUY_ME_A_COFFEE_URL = "https://buymeacoffee.com/beatrizamaral";
 
 interface DonateModalProps {
   onClose: () => void;
@@ -11,18 +12,25 @@ interface DonateModalProps {
 
 export function DonateModal({ onClose }: DonateModalProps) {
   const { t } = useTranslation();
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [pixQrDataUrl, setPixQrDataUrl] = useState<string | null>(null);
+  const [bmcQrDataUrl, setBmcQrDataUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const payload = buildPixPayload(PIX);
+  const pixPayload = buildPixPayload(PIX);
 
   useEffect(() => {
-    QRCode.toDataURL(payload, { margin: 1, width: 240 })
-      .then(setQrDataUrl)
-      .catch(() => setQrDataUrl(null));
-  }, [payload]);
+    QRCode.toDataURL(pixPayload, { margin: 1, width: 200 })
+      .then(setPixQrDataUrl)
+      .catch(() => setPixQrDataUrl(null));
+  }, [pixPayload]);
+
+  useEffect(() => {
+    QRCode.toDataURL(BUY_ME_A_COFFEE_URL, { margin: 1, width: 200 })
+      .then(setBmcQrDataUrl)
+      .catch(() => setBmcQrDataUrl(null));
+  }, []);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(payload);
+    await navigator.clipboard.writeText(pixPayload);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -37,14 +45,39 @@ export function DonateModal({ onClose }: DonateModalProps) {
         <div className="modal__body pair-panel">
           <p className="modal__hint">{t("donate.blurb")}</p>
 
-          {qrDataUrl && <img className="pair-panel__qr" src={qrDataUrl} alt="QR code Pix" />}
+          <div className="donate-options">
+            <div className="donate-option">
+              <span className="donate-option__label">{t("donate.pixLabel")}</span>
+              {pixQrDataUrl && (
+                <img className="pair-panel__qr" src={pixQrDataUrl} alt="QR code Pix" />
+              )}
+              <p className="modal__hint">{t("donate.scanHint")}</p>
+              <code className="pair-panel__url">{PIX.key}</code>
+              <button className="modal__submit" onClick={handleCopy}>
+                {copied ? t("donate.copied") : t("donate.copy")}
+              </button>
+            </div>
 
-          <p className="modal__hint">{t("donate.scanHint")}</p>
-          <code className="pair-panel__url">{PIX.key}</code>
-
-          <button className="modal__submit" onClick={handleCopy}>
-            {copied ? t("donate.copied") : t("donate.copy")}
-          </button>
+            <div className="donate-option">
+              <span className="donate-option__label">{t("donate.bmcLabel")}</span>
+              {bmcQrDataUrl && (
+                <img
+                  className="pair-panel__qr"
+                  src={bmcQrDataUrl}
+                  alt="QR code Buy Me a Coffee"
+                />
+              )}
+              <p className="modal__hint">{t("donate.bmcHint")}</p>
+              <a
+                className="modal__submit donate-option__bmc-link"
+                href={BUY_ME_A_COFFEE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t("donate.bmcButton")}
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>

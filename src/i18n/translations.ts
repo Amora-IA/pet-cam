@@ -71,10 +71,14 @@ export const translations = {
 
     "donate.title": "APOIAR O PROJETO",
     "donate.blurb":
-      "O PetWatch é gratuito e open source. Se ele te ajudou, considere doar qualquer valor via Pix — é totalmente opcional.",
+      "O PetWatch é gratuito e open source. Se ele te ajudou, considere doar qualquer valor — é totalmente opcional.",
+    "donate.pixLabel": "PIX (BRASIL)",
     "donate.scanHint": "Escaneie com o app do seu banco, ou copie a chave:",
     "donate.copy": "COPIAR CÓDIGO PIX",
     "donate.copied": "COPIADO!",
+    "donate.bmcLabel": "FORA DO BRASIL",
+    "donate.bmcHint": "Escaneie o QR ou clique no botão:",
+    "donate.bmcButton": "☕ BUY ME A COFFEE",
 
     "app.empty": "Nenhuma câmera configurada ainda.",
     "app.addFirst": "+ ADICIONAR PRIMEIRA CÂMERA",
@@ -161,10 +165,14 @@ export const translations = {
 
     "donate.title": "SUPPORT THE PROJECT",
     "donate.blurb":
-      "PetWatch is free and open source. If it helped you, consider donating any amount via Pix (Brazil's instant payment system) — totally optional.",
+      "PetWatch is free and open source. If it helped you, consider donating any amount — totally optional.",
+    "donate.pixLabel": "PIX (BRAZIL)",
     "donate.scanHint": "Scan with your bank app, or copy the key:",
     "donate.copy": "COPY PIX CODE",
     "donate.copied": "COPIED!",
+    "donate.bmcLabel": "OUTSIDE BRAZIL",
+    "donate.bmcHint": "Scan the QR or click the button:",
+    "donate.bmcButton": "☕ BUY ME A COFFEE",
 
     "app.empty": "No camera configured yet.",
     "app.addFirst": "+ ADD FIRST CAMERA",
