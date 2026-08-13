@@ -6,6 +6,7 @@ import { requestNotificationPermission } from "./hooks/useMotionAlert";
 import { StatusBar } from "./components/StatusBar";
 import { CameraTile } from "./components/CameraTile";
 import { AddCameraModal } from "./components/AddCameraModal";
+import { DonateModal } from "./components/DonateModal";
 import { EventTimeline } from "./components/EventTimeline";
 import { ClipPlayer } from "./components/ClipPlayer";
 import { listClips, deleteClip, getTotalStorageBytes } from "./db/clipsDb";
@@ -20,6 +21,7 @@ function App() {
   const [soundAlertsEnabled, setSoundAlertsEnabled] = useState(true);
   const [pushAlertsEnabled, setPushAlertsEnabled] = useState(false);
   const [showAddCamera, setShowAddCamera] = useState(configs.length === 0);
+  const [showDonate, setShowDonate] = useState(false);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [liveMap, setLiveMap] = useState<Record<string, boolean>>({});
 
@@ -79,6 +81,7 @@ function App() {
         onTogglePushAlerts={handleTogglePushAlerts}
         storageUsedMb={storageBytes / (1024 * 1024)}
         onAddCamera={() => setShowAddCamera(true)}
+        onDonate={() => setShowDonate(true)}
       />
 
       <main className="app__main">
@@ -138,6 +141,8 @@ function App() {
       {selectedClip && (
         <ClipPlayer clip={selectedClip} onClose={() => setSelectedClipId(null)} />
       )}
+
+      {showDonate && <DonateModal onClose={() => setShowDonate(false)} />}
     </div>
   );
 }

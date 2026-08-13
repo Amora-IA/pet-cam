@@ -569,6 +569,23 @@ body,
   border-radius: 3px;
 }
 
+.status-bar__donate {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--panel-border);
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.status-bar__donate:hover {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+
 /* ---------- Camera tile ---------- */
 
 .camera-tile {

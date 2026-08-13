@@ -14,6 +14,7 @@ interface StatusBarProps {
   onTogglePushAlerts: () => void;
   storageUsedMb: number;
   onAddCamera: () => void;
+  onDonate: () => void;
 }
 
 export function StatusBar({
@@ -30,6 +31,7 @@ export function StatusBar({
   onTogglePushAlerts,
   storageUsedMb,
   onAddCamera,
+  onDonate,
 }: StatusBarProps) {
   return (
     <header className="status-bar">
@@ -79,6 +81,9 @@ export function StatusBar({
       </div>
 
       <div className="status-bar__meta">
+        <button className="status-bar__donate" onClick={onDonate}>
+          💚 APOIAR
+        </button>
         <span>{storageUsedMb.toFixed(1)} MB usados</span>
         <span className="status-bar__clock">{formatClock(now)}</span>
       </div>
