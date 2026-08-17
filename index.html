@@ -8,6 +8,49 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <script>
+      // Deliberately plain ES5, outside the module/bundle system entirely,
+      // so it still runs even on engines too old to execute anything else
+      // on this page. Its only job is to say WHY, in plain text, if the
+      // real app never mounts — instead of leaving a silent blank screen.
+      (function () {
+        function showDiag(text) {
+          var el = document.getElementById("petwatch-diag");
+          if (!el) {
+            el = document.createElement("div");
+            el.id = "petwatch-diag";
+            el.style.cssText =
+              "position:fixed;inset:0;background:#05070a;color:#ff9b9b;" +
+              "font-family:monospace;font-size:12px;padding:20px;" +
+              "overflow:auto;z-index:99999;white-space:pre-wrap;";
+            document.body.appendChild(el);
+          }
+          el.textContent += text + "\n";
+        }
+
+        window.onerror = function (msg, url, line, col) {
+          showDiag("JS error: " + msg + " (" + url + ":" + line + ")");
+        };
+
+        setTimeout(function () {
+          if (window.__petwatchMounted) return;
+          var supportsModule = "noModule" in document.createElement("script");
+          var lines = [
+            "PetWatch nao carregou / did not load.",
+            "",
+            "User agent: " + navigator.userAgent,
+            "type=module support: " + supportsModule,
+            "fetch: " + (typeof fetch !== "undefined"),
+            "Promise: " + (typeof Promise !== "undefined"),
+            "navigator.mediaDevices: " + (typeof navigator.mediaDevices !== "undefined"),
+            "localStorage: " + (typeof localStorage !== "undefined"),
+          ];
+          showDiag(lines.join("\n"));
+        }, 6000);
+      })();
+    </script>
+
     <noscript>
       <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#05070a;color:#d7e6dc;font-family:monospace;text-align:center;">
         <div>

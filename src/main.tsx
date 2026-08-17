@@ -18,3 +18,7 @@ createRoot(document.getElementById("root")!).render(
     </ErrorBoundary>
   </StrictMode>
 );
+
+// Tells the plain-JS diagnostic script in index.html that the bundle at
+// least got this far — if it never sees this flag, it shows the reason why.
+(window as unknown as { __petwatchMounted?: boolean }).__petwatchMounted = true;
