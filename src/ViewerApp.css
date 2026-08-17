@@ -16,26 +16,26 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 16px;
-  background: var(--panel);
-  border-top: 1px solid var(--panel-border);
+  background: #0b0f14;
+  border-top: 1px solid #1c2530;
 }
 
 .viewer-app__status {
   font-size: 11px;
   letter-spacing: 1px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .viewer-app__status.is-connected {
-  color: var(--accent);
+  color: #39ff88;
 }
 
 .viewer-app__talk {
   flex: 1;
   max-width: 280px;
-  background: var(--bg);
-  color: var(--accent);
-  border: 1px solid var(--accent-dim);
+  background: #05070a;
+  color: #39ff88;
+  border: 1px solid #1f8a4d;
   padding: 14px;
   font-family: inherit;
   font-size: 13px;
@@ -45,7 +45,7 @@
 }
 
 .viewer-app__talk:active {
-  background: var(--accent-dim);
+  background: #1f8a4d;
   color: #05130a;
 }
 
@@ -56,7 +56,7 @@
 
 .viewer-app__mic-error {
   font-size: 10px;
-  color: var(--danger);
+  color: #ff3b3b;
 }
 
 .viewer-join {
@@ -64,8 +64,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
-  color: var(--text);
+  background: #05070a;
+  color: #d7e6dc;
   padding: 20px;
 }
 
@@ -78,22 +78,22 @@
 }
 
 .viewer-join__box h1 {
-  color: var(--accent);
+  color: #39ff88;
   font-size: 20px;
   letter-spacing: 2px;
   margin: 0;
 }
 
 .viewer-join__box p {
-  color: var(--text-dim);
+  color: #6c7f78;
   font-size: 12px;
   margin: 0;
 }
 
 .viewer-join__box input {
-  background: var(--panel);
-  color: var(--text);
-  border: 1px solid var(--panel-border);
+  background: #0b0f14;
+  color: #d7e6dc;
+  border: 1px solid #1c2530;
   padding: 12px;
   font-family: inherit;
   font-size: 18px;
@@ -103,7 +103,7 @@
 }
 
 .viewer-join__box button {
-  background: var(--accent-dim);
+  background: #1f8a4d;
   color: #05130a;
   border: none;
   padding: 12px;

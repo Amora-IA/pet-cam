@@ -1,12 +1,17 @@
+/*
+ * Colors are hardcoded as literal hex values everywhere in this file rather
+ * than CSS custom properties (var(--x)) — support for those only landed in
+ * Safari 9.1. This app's whole point is running on hardware too old and
+ * broken to buy a real security camera for, so an iPad stuck a version
+ * behind that would otherwise render everything invisible against the body
+ * background, with no error to explain why.
+ *
+ * Palette reference: bg #05070a, panel #0b0f14, panel-border #1c2530,
+ * accent #39ff88, accent-dim #1f8a4d, danger #ff3b3b, text #d7e6dc,
+ * text-dim #6c7f78.
+ */
+
 :root {
-  --bg: #05070a;
-  --panel: #0b0f14;
-  --panel-border: #1c2530;
-  --accent: #39ff88;
-  --accent-dim: #1f8a4d;
-  --danger: #ff3b3b;
-  --text: #d7e6dc;
-  --text-dim: #6c7f78;
   font-family: "JetBrains Mono", "Courier New", Courier, monospace;
 }
 
@@ -19,8 +24,8 @@ body,
 #root {
   height: 100%;
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
+  background: #05070a;
+  color: #d7e6dc;
 }
 
 .app {
@@ -38,8 +43,8 @@ body,
   justify-content: space-between;
   gap: 16px;
   padding: 10px 18px;
-  background: var(--panel);
-  border-bottom: 1px solid var(--panel-border);
+  background: #0b0f14;
+  border-bottom: 1px solid #1c2530;
   flex-wrap: wrap;
 }
 
@@ -52,7 +57,7 @@ body,
 .status-bar__logo {
   font-weight: 700;
   letter-spacing: 2px;
-  color: var(--accent);
+  color: #39ff88;
 }
 
 .status-bar__pill {
@@ -60,17 +65,17 @@ body,
   letter-spacing: 1px;
   padding: 2px 8px;
   border-radius: 3px;
-  border: 1px solid var(--panel-border);
+  border: 1px solid #1c2530;
 }
 
 .status-bar__pill.is-live {
-  color: var(--accent);
-  border-color: var(--accent-dim);
+  color: #39ff88;
+  border-color: #1f8a4d;
 }
 
 .status-bar__pill.is-off {
-  color: var(--danger);
-  border-color: var(--danger);
+  color: #ff3b3b;
+  border-color: #ff3b3b;
 }
 
 .status-bar__controls {
@@ -81,9 +86,9 @@ body,
 }
 
 .status-bar__select {
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--panel-border);
+  background: #05070a;
+  color: #d7e6dc;
+  border: 1px solid #1c2530;
   padding: 5px 8px;
   font-family: inherit;
   font-size: 12px;
@@ -95,14 +100,14 @@ body,
   gap: 8px;
   font-size: 11px;
   letter-spacing: 1px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .status-bar__toggle,
 .status-bar__snapshot {
-  background: var(--bg);
-  color: var(--text-dim);
-  border: 1px solid var(--panel-border);
+  background: #05070a;
+  color: #6c7f78;
+  border: 1px solid #1c2530;
   padding: 6px 12px;
   font-family: inherit;
   font-size: 11px;
@@ -112,8 +117,8 @@ body,
 }
 
 .status-bar__toggle.is-on {
-  color: var(--accent);
-  border-color: var(--accent-dim);
+  color: #39ff88;
+  border-color: #1f8a4d;
 }
 
 .status-bar__snapshot:disabled {
@@ -125,11 +130,11 @@ body,
   display: flex;
   gap: 16px;
   font-size: 11px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .status-bar__clock {
-  color: var(--accent);
+  color: #39ff88;
 }
 
 /* ---------- Main layout ---------- */
@@ -155,7 +160,7 @@ body,
 .camera-view {
   position: relative;
   background: #000;
-  border: 1px solid var(--panel-border);
+  border: 1px solid #1c2530;
   border-radius: 4px;
   overflow: hidden;
   display: flex;
@@ -181,12 +186,12 @@ body,
   padding: 24px;
   font-size: 13px;
   letter-spacing: 1px;
-  color: var(--text-dim);
+  color: #6c7f78;
   z-index: 3;
 }
 
 .camera-view__overlay-error {
-  color: var(--danger);
+  color: #ff3b3b;
   max-width: 320px;
 }
 
@@ -215,7 +220,7 @@ body,
   position: absolute;
   width: 22px;
   height: 22px;
-  border-color: var(--accent-dim);
+  border-color: #1f8a4d;
   opacity: 0.8;
   z-index: 2;
 }
@@ -261,7 +266,7 @@ body,
 .camera-view__top-left {
   top: 16px;
   left: 20px;
-  color: var(--accent);
+  color: #39ff88;
   text-shadow: 0 0 6px rgba(57, 255, 136, 0.5);
 }
 
@@ -281,7 +286,7 @@ body,
 }
 
 .camera-view__timestamp {
-  color: var(--text);
+  color: #d7e6dc;
   background: rgba(0, 0, 0, 0.35);
   padding: 2px 6px;
   border-radius: 2px;
@@ -291,7 +296,7 @@ body,
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--danger);
+  color: #ff3b3b;
   font-weight: 700;
 }
 
@@ -299,12 +304,12 @@ body,
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--danger);
+  background: #ff3b3b;
   animation: blink 1s infinite;
 }
 
 .camera-view__standby {
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 @keyframes blink {
@@ -321,11 +326,11 @@ body,
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .camera-view__motion.is-active {
-  color: var(--accent);
+  color: #39ff88;
 }
 
 .camera-view__motion-bar {
@@ -338,15 +343,15 @@ body,
 
 .camera-view__motion-bar-fill {
   height: 100%;
-  background: var(--accent);
+  background: #39ff88;
   transition: width 0.15s linear;
 }
 
 /* ---------- Event timeline ---------- */
 
 .event-timeline {
-  background: var(--panel);
-  border: 1px solid var(--panel-border);
+  background: #0b0f14;
+  border: 1px solid #1c2530;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
@@ -357,20 +362,20 @@ body,
   display: flex;
   justify-content: space-between;
   padding: 12px 14px;
-  border-bottom: 1px solid var(--panel-border);
+  border-bottom: 1px solid #1c2530;
   font-size: 12px;
   letter-spacing: 1px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .event-timeline__count {
-  color: var(--accent);
+  color: #39ff88;
 }
 
 .event-timeline__empty {
   padding: 20px 14px;
   font-size: 12px;
-  color: var(--text-dim);
+  color: #6c7f78;
   line-height: 1.6;
 }
 
@@ -397,7 +402,7 @@ body,
 }
 
 .event-timeline__item.is-selected {
-  border-color: var(--accent-dim);
+  border-color: #1f8a4d;
   background: rgba(57, 255, 136, 0.06);
 }
 
@@ -443,25 +448,25 @@ body,
 
 .event-timeline__time {
   font-size: 11px;
-  color: var(--text);
+  color: #d7e6dc;
 }
 
 .event-timeline__reason {
   font-size: 10px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .event-timeline__delete {
   background: transparent;
   border: none;
-  color: var(--text-dim);
+  color: #6c7f78;
   cursor: pointer;
   font-size: 12px;
   padding: 4px;
 }
 
 .event-timeline__delete:hover {
-  color: var(--danger);
+  color: #ff3b3b;
 }
 
 /* ---------- Clip player ---------- */
@@ -477,8 +482,8 @@ body,
 }
 
 .clip-player {
-  background: var(--panel);
-  border: 1px solid var(--panel-border);
+  background: #0b0f14;
+  border: 1px solid #1c2530;
   border-radius: 6px;
   width: min(720px, 92vw);
   overflow: hidden;
@@ -489,15 +494,15 @@ body,
   justify-content: space-between;
   align-items: center;
   padding: 10px 14px;
-  border-bottom: 1px solid var(--panel-border);
+  border-bottom: 1px solid #1c2530;
   font-size: 12px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .clip-player__header button {
   background: transparent;
   border: none;
-  color: var(--text-dim);
+  color: #6c7f78;
   cursor: pointer;
   font-size: 14px;
 }
@@ -512,7 +517,7 @@ body,
 .clip-player__loading {
   padding: 40px;
   text-align: center;
-  color: var(--text-dim);
+  color: #6c7f78;
   font-size: 12px;
 }
 
@@ -539,16 +544,16 @@ body,
   align-items: center;
   justify-content: center;
   gap: 16px;
-  color: var(--text-dim);
+  color: #6c7f78;
   font-size: 13px;
-  border: 1px dashed var(--panel-border);
+  border: 1px dashed #1c2530;
   border-radius: 4px;
 }
 
 .app__empty-add {
-  background: var(--bg);
-  color: var(--accent);
-  border: 1px solid var(--accent-dim);
+  background: #05070a;
+  color: #39ff88;
+  border: 1px solid #1f8a4d;
   padding: 10px 18px;
   font-family: inherit;
   font-size: 12px;
@@ -558,9 +563,9 @@ body,
 }
 
 .status-bar__add-camera {
-  background: var(--bg);
-  color: var(--accent);
-  border: 1px solid var(--accent-dim);
+  background: #05070a;
+  color: #39ff88;
+  border: 1px solid #1f8a4d;
   padding: 6px 12px;
   font-family: inherit;
   font-size: 11px;
@@ -571,8 +576,8 @@ body,
 
 .status-bar__donate {
   background: transparent;
-  color: var(--text-dim);
-  border: 1px solid var(--panel-border);
+  color: #6c7f78;
+  border: 1px solid #1c2530;
   padding: 4px 10px;
   font-family: inherit;
   font-size: 10px;
@@ -582,8 +587,8 @@ body,
 }
 
 .status-bar__donate:hover {
-  color: var(--accent);
-  border-color: var(--accent-dim);
+  color: #39ff88;
+  border-color: #1f8a4d;
 }
 
 /* ---------- Language switch ---------- */
@@ -593,13 +598,13 @@ body,
   align-items: center;
   gap: 4px;
   font-size: 10px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .lang-switch button {
   background: transparent;
   border: none;
-  color: var(--text-dim);
+  color: #6c7f78;
   font-family: inherit;
   font-size: 10px;
   letter-spacing: 1px;
@@ -608,7 +613,7 @@ body,
 }
 
 .lang-switch button.is-active {
-  color: var(--accent);
+  color: #39ff88;
   font-weight: 700;
 }
 
@@ -657,7 +662,7 @@ body,
 
 .camera-tile__name {
   font-size: 11px;
-  color: var(--text);
+  color: #d7e6dc;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -675,8 +680,8 @@ body,
 .camera-tile__focus,
 .camera-tile__remove {
   background: rgba(11, 15, 20, 0.85);
-  color: var(--text-dim);
-  border: 1px solid var(--panel-border);
+  color: #6c7f78;
+  border: 1px solid #1c2530;
   padding: 5px 9px;
   font-family: inherit;
   font-size: 10px;
@@ -687,18 +692,18 @@ body,
 }
 
 .camera-tile__talk.is-active {
-  color: var(--danger);
-  border-color: var(--danger);
+  color: #ff3b3b;
+  border-color: #ff3b3b;
 }
 
 .camera-tile__pair.is-active {
-  color: var(--accent);
-  border-color: var(--accent-dim);
+  color: #39ff88;
+  border-color: #1f8a4d;
 }
 
 .camera-tile__remove:hover {
-  color: var(--danger);
-  border-color: var(--danger);
+  color: #ff3b3b;
+  border-color: #ff3b3b;
 }
 
 .camera-tile__talk-error {
@@ -708,8 +713,8 @@ body,
   right: 10px;
   z-index: 6;
   background: rgba(255, 59, 59, 0.12);
-  border: 1px solid var(--danger);
-  color: var(--danger);
+  border: 1px solid #ff3b3b;
+  color: #ff3b3b;
   font-size: 10px;
   padding: 4px 8px;
   border-radius: 3px;
@@ -728,8 +733,8 @@ body,
 }
 
 .modal {
-  background: var(--panel);
-  border: 1px solid var(--panel-border);
+  background: #0b0f14;
+  border: 1px solid #1c2530;
   border-radius: 6px;
   width: min(420px, 92vw);
   overflow: hidden;
@@ -740,16 +745,16 @@ body,
   justify-content: space-between;
   align-items: center;
   padding: 12px 14px;
-  border-bottom: 1px solid var(--panel-border);
+  border-bottom: 1px solid #1c2530;
   font-size: 12px;
   letter-spacing: 1px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .modal__header button {
   background: transparent;
   border: none;
-  color: var(--text-dim);
+  color: #6c7f78;
   cursor: pointer;
   font-size: 14px;
 }
@@ -763,13 +768,13 @@ body,
 
 .modal__hint {
   font-size: 12px;
-  color: var(--text-dim);
+  color: #6c7f78;
   line-height: 1.6;
 }
 
 .modal__error {
   font-size: 12px;
-  color: var(--danger);
+  color: #ff3b3b;
 }
 
 .modal__field {
@@ -778,14 +783,14 @@ body,
   gap: 6px;
   font-size: 11px;
   letter-spacing: 1px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .modal__field select,
 .modal__field input {
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--panel-border);
+  background: #05070a;
+  color: #d7e6dc;
+  border: 1px solid #1c2530;
   padding: 8px;
   font-family: inherit;
   font-size: 13px;
@@ -793,7 +798,7 @@ body,
 }
 
 .modal__submit {
-  background: var(--accent-dim);
+  background: #1f8a4d;
   color: #05130a;
   border: none;
   padding: 10px;
@@ -831,14 +836,14 @@ body,
   align-items: center;
   gap: 8px;
   padding: 12px;
-  border: 1px solid var(--panel-border);
+  border: 1px solid #1c2530;
   border-radius: 4px;
 }
 
 .donate-option__label {
   font-size: 10px;
   letter-spacing: 1px;
-  color: var(--text-dim);
+  color: #6c7f78;
 }
 
 .donate-option__bmc-link {
@@ -849,9 +854,9 @@ body,
 
 .pair-panel__toggle {
   align-self: stretch;
-  background: var(--bg);
-  color: var(--text-dim);
-  border: 1px solid var(--panel-border);
+  background: #05070a;
+  color: #6c7f78;
+  border: 1px solid #1c2530;
   padding: 10px;
   font-family: inherit;
   font-size: 12px;
@@ -861,15 +866,15 @@ body,
 }
 
 .pair-panel__toggle.is-on {
-  color: var(--accent);
-  border-color: var(--accent-dim);
+  color: #39ff88;
+  border-color: #1f8a4d;
 }
 
 .pair-panel__code {
   font-size: 28px;
   font-weight: 700;
   letter-spacing: 6px;
-  color: var(--accent);
+  color: #39ff88;
 }
 
 .pair-panel__qr {
@@ -882,12 +887,12 @@ body,
 
 .pair-panel__url {
   font-size: 11px;
-  color: var(--text-dim);
+  color: #6c7f78;
   word-break: break-all;
-  background: var(--bg);
+  background: #05070a;
   padding: 6px 8px;
   border-radius: 3px;
-  border: 1px solid var(--panel-border);
+  border: 1px solid #1c2530;
 }
 
 .pair-panel__stun {
@@ -896,7 +901,7 @@ body,
   gap: 8px;
   text-align: left;
   font-size: 10px;
-  color: var(--text-dim);
+  color: #6c7f78;
   line-height: 1.5;
 }
 
